@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.vcxproj.user
+*.opensdf
+*.sdf
+*.suo
+*.ipch
