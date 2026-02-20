@@ -1,10 +1,10 @@
 #include "ofApp.h"
 #include "SineOscillator.h"
+#include "SquareOscillator.h"
+#include "NoiseOscillator.h"
 
 
 void ofApp::setup() {
-
-	// Configure audio stream
 	ofSoundStreamSettings settings;
 	settings.setOutListener(this);
 	settings.sampleRate = 44100;
@@ -15,9 +15,8 @@ void ofApp::setup() {
 	soundStream.setup(settings);
 	soundStream.start();
 
-	// Create sine oscillator
-	synth.setOscillator(
-		std::make_unique<SineOscillator>(440.0f, 44100.0f));
+	const float sr = static_cast<float>(settings.sampleRate);
+	synth.setOscillator(std::make_unique<SineOscillator>(440.0f, sr));
 }
 
 
@@ -28,5 +27,22 @@ void ofApp::audioOut(ofSoundBuffer & buffer) {
 		for (size_t ch = 0; ch < buffer.getNumChannels(); ch++) {
 			buffer[i * buffer.getNumChannels() + ch] = sample;
 		}
+	}
+}
+
+void ofApp::keyPressed(int key) {
+	if (key == '1') {
+		synth.setOscillator(
+			std::make_unique<SineOscillator>(440.0f, 44100.0f));
+	}
+
+	if (key == '2') {
+		synth.setOscillator(
+			std::make_unique<SquareOscillator>(440.0f, 44100.0f));
+	}
+
+	if (key == '3') {
+		synth.setOscillator(
+			std::make_unique<NoiseOscillator>(440.0f, 44100.0f));
 	}
 }

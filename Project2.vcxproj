@@ -238,15 +238,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NoiseOscillator.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\Oscillator.cpp" />
     <ClCompile Include="src\SineOscillator.cpp" />
+    <ClCompile Include="src\SquareOscillator.cpp" />
     <ClCompile Include="src\Synth.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\NoiseOscillator.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\Oscillator.h" />
     <ClInclude Include="src\SineOscillator.h" />
+    <ClInclude Include="src\SquareOscillator.h" />
     <ClInclude Include="src\Synth.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

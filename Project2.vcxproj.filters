@@ -24,6 +24,12 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\SquareOscillator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NoiseOscillator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ofApp.h">
@@ -36,6 +42,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Oscillator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SquareOscillator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NoiseOscillator.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
