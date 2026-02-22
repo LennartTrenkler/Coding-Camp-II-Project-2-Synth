@@ -15,8 +15,8 @@ public:
 private:
     Synth synth;
     ofSoundStream soundStream;
-
     std::vector<float> waveformBuffer;
     std::mutex bufferMutex;
     int oscillatorType = 1;
+    float currentAmplitude = 0.0f;
 };

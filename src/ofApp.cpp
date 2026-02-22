@@ -25,9 +25,57 @@ void ofApp::update() {
 }
 
 void ofApp::draw() {
-    ofBackground(0);
+    // Background tinted by amplitude
+    int brightness = currentAmplitude * 60;
+    ofBackground(0, brightness / 4, brightness / 2);
+
+    // Soft glowing circle in centre
+    ofSetColor(50, 100, 200, currentAmplitude * 200);
+    ofDrawCircle(ofGetWidth() / 2, ofGetHeight() / 2, currentAmplitude * 300);
+
+    // Key hint
     ofSetColor(255);
     ofDrawBitmapString("Press 1 (Sine)  2 (Square)  3 (Noise)", 20, 20);
+
+    // Oscillator label and frequency
+    string label = "Oscillator: ";
+    if (oscillatorType == 1) label += "Sine";
+    else if (oscillatorType == 2) label += "Square";
+    else label += "Noise";
+    label += "  |  440 Hz";
+    ofDrawBitmapString(label, 20, ofGetHeight() - 20);
+
+    // Waveform colour based on oscillator type
+    if (oscillatorType == 1) ofSetColor(0, 200, 255);
+    else if (oscillatorType == 2) ofSetColor(255, 100, 50);
+    else ofSetColor(180, 100, 255);
+
+    // Waveform
+    {
+        std::lock_guard<std::mutex> lock(bufferMutex);
+        float midY = ofGetHeight() / 2.0f;
+        float scaleY = 200.0f;
+        float stepX = (float)ofGetWidth() / waveformBuffer.size();
+
+        ofSetLineWidth(2);
+        ofPolyline line;
+        for (int i = 0; i < (int)waveformBuffer.size(); i++) {
+            line.addVertex(i * stepX, midY - waveformBuffer[i] * scaleY);
+        }
+        line.draw();
+    }
+
+    // Amplitude bar
+    float margin = 20.0f;
+    float barWidth = 20.0f;
+    float maxBarHeight = ofGetHeight() - 60.0f;
+    float barHeight = currentAmplitude * maxBarHeight;
+    float barX = ofGetWidth() - barWidth - margin;
+    float barY = ofGetHeight() - barHeight - 40.0f;
+
+    ofSetColor(255);
+    ofDrawRectangle(barX, barY, barWidth, barHeight);
+    ofDrawBitmapString("Vol", barX, ofGetHeight() - 20.0f);
 }
 
 void ofApp::audioOut(ofSoundBuffer& buffer) {
@@ -35,13 +83,17 @@ void ofApp::audioOut(ofSoundBuffer& buffer) {
 
     for (size_t i = 0; i < buffer.getNumFrames(); i++) {
         float sample = synth.generateSample();
-
         waveformBuffer[i % waveformBuffer.size()] = sample;
 
         for (size_t ch = 0; ch < buffer.getNumChannels(); ch++) {
             buffer[i * buffer.getNumChannels() + ch] = sample;
         }
     }
+
+    // Compute RMS amplitude
+    float rms = 0.0f;
+    for (auto s : waveformBuffer) rms += s * s;
+    currentAmplitude = sqrt(rms / waveformBuffer.size());
 }
 
 void ofApp::keyPressed(int key) {
