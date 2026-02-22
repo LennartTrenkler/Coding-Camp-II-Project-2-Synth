@@ -18,49 +18,80 @@ void ofApp::setup() {
     synth.setOscillator(std::make_unique<SineOscillator>(440.0f, sr));
 
     waveformBuffer.resize(512, 0.0f);
+
+    // Define buttons
+    sinButton    = { 40,  80, 140, 44, "Sine",   true  };
+    squareButton = { 200, 80, 140, 44, "Square", false };
+    noiseButton  = { 360, 80, 140, 44, "Noise",  false };
 }
 
 void ofApp::update() {
-    // placeholder for now
+}
+
+void ofApp::drawButton(const Button& btn) {
+    if (btn.isActive) {
+        ofSetColor(255); // white fill when active
+    } else {
+        ofSetColor(50);  // dark fill when inactive
+    }
+    ofDrawRectRounded(btn.x, btn.y, btn.width, btn.height, 6);
+
+    // Label
+    if (btn.isActive) {
+        ofSetColor(0);   // black text on white
+    } else {
+        ofSetColor(200); // light text on dark
+    }
+    ofDrawBitmapString(btn.label, btn.x + btn.width / 2 - btn.label.size() * 4, btn.y + btn.height / 2 + 5);
 }
 
 void ofApp::draw() {
-    // Background tinted by amplitude
-    int brightness = currentAmplitude * 60;
-    ofBackground(0, brightness / 4, brightness / 2);
+    ofBackground(0);
 
-    // Soft glowing circle in centre
-    ofSetColor(50, 100, 200, currentAmplitude * 200);
-    ofDrawCircle(ofGetWidth() / 2, ofGetHeight() / 2, currentAmplitude * 300);
-
-    // Key hint
+    // Title
     ofSetColor(255);
-    ofDrawBitmapString("Press 1 (Sine)  2 (Square)  3 (Noise)", 20, 20);
+    ofDrawBitmapStringHighlight("Synthesizer", 40, 40, ofColor(0,0,0,0), ofColor(255));
 
-    // Oscillator label and frequency
-    string label = "Oscillator: ";
-    if (oscillatorType == 1) label += "Sine";
-    else if (oscillatorType == 2) label += "Square";
-    else label += "Noise";
-    label += "  |  440 Hz";
-    ofDrawBitmapString(label, 20, ofGetHeight() - 20);
+    // Buttons
+    drawButton(sinButton);
+    drawButton(squareButton);
+    drawButton(noiseButton);
 
-    // Waveform colour based on oscillator type
+    // Waveform canvas
+    float canvasX = 40;
+    float canvasY = 160;
+    float canvasW = ofGetWidth() - 120;
+    float canvasH = ofGetHeight() - 220;
+
+    ofSetColor(30);
+    ofDrawRectRounded(canvasX, canvasY, canvasW, canvasH, 8);
+
+    // Oscillator label inside canvas
+    ofSetColor(150);
+    string label = "";
+    if (oscillatorType == 1) label = "SINE";
+    else if (oscillatorType == 2) label = "SQUARE";
+    else label = "NOISE";
+    label += "  |  440 HZ";
+    ofDrawBitmapString(label, canvasX + 16, canvasY + 24);
+
+    // Waveform colour
     if (oscillatorType == 1) ofSetColor(0, 200, 255);
     else if (oscillatorType == 2) ofSetColor(255, 100, 50);
     else ofSetColor(180, 100, 255);
 
-    // Waveform
+    // Draw waveform
     {
         std::lock_guard<std::mutex> lock(bufferMutex);
-        float midY = ofGetHeight() / 2.0f;
-        float scaleY = 200.0f;
-        float stepX = (float)ofGetWidth() / waveformBuffer.size();
+        float midY = canvasY + canvasH / 2.0f;
+        float scaleY = canvasH * 0.35f;
+        int samplesToDisplay = 256;
+        float stepX = canvasW / (float)samplesToDisplay;
 
         ofSetLineWidth(2);
         ofPolyline line;
-        for (int i = 0; i < (int)waveformBuffer.size(); i++) {
-            line.addVertex(i * stepX, midY - waveformBuffer[i] * scaleY);
+        for (int i = 0; i < samplesToDisplay; i++) {
+            line.addVertex(canvasX + i * stepX, midY - waveformBuffer[i] * scaleY);
         }
         line.draw();
     }
@@ -75,7 +106,7 @@ void ofApp::draw() {
 
     ofSetColor(255);
     ofDrawRectangle(barX, barY, barWidth, barHeight);
-    ofDrawBitmapString("Vol", barX, ofGetHeight() - 20.0f);
+    ofDrawBitmapString("VOL", barX - 2, ofGetHeight() - 20.0f);
 }
 
 void ofApp::audioOut(ofSoundBuffer& buffer) {
@@ -90,23 +121,55 @@ void ofApp::audioOut(ofSoundBuffer& buffer) {
         }
     }
 
-    // Compute RMS amplitude
     float rms = 0.0f;
     for (auto s : waveformBuffer) rms += s * s;
     currentAmplitude = sqrt(rms / waveformBuffer.size());
 }
 
+void ofApp::mousePressed(int x, int y, int button) {
+    if (sinButton.contains(x, y)) {
+        oscillatorType = 1;
+        sinButton.isActive = true;
+        squareButton.isActive = false;
+        noiseButton.isActive = false;
+        synth.setOscillator(std::make_unique<SineOscillator>(440.0f, 44100.0f));
+    }
+    if (squareButton.contains(x, y)) {
+        oscillatorType = 2;
+        sinButton.isActive = false;
+        squareButton.isActive = true;
+        noiseButton.isActive = false;
+        synth.setOscillator(std::make_unique<SquareOscillator>(440.0f, 44100.0f));
+    }
+    if (noiseButton.contains(x, y)) {
+        oscillatorType = 3;
+        sinButton.isActive = false;
+        squareButton.isActive = false;
+        noiseButton.isActive = true;
+        synth.setOscillator(std::make_unique<NoiseOscillator>(440.0f, 44100.0f));
+    }
+}
+
 void ofApp::keyPressed(int key) {
     if (key == '1') {
         oscillatorType = 1;
+        sinButton.isActive = true;
+        squareButton.isActive = false;
+        noiseButton.isActive = false;
         synth.setOscillator(std::make_unique<SineOscillator>(440.0f, 44100.0f));
     }
     if (key == '2') {
         oscillatorType = 2;
+        sinButton.isActive = false;
+        squareButton.isActive = true;
+        noiseButton.isActive = false;
         synth.setOscillator(std::make_unique<SquareOscillator>(440.0f, 44100.0f));
     }
     if (key == '3') {
         oscillatorType = 3;
+        sinButton.isActive = false;
+        squareButton.isActive = false;
+        noiseButton.isActive = true;
         synth.setOscillator(std::make_unique<NoiseOscillator>(440.0f, 44100.0f));
     }
 }
