@@ -30,7 +30,8 @@ private:
     float frequency = 440.0f;
     int oscillatorType = 1;
     int samplesToDisplay = 300;
-
+    float animPhase = 0.0f;
+    
     Button sinButton, squareButton, noiseButton;
     Button sawtoothButton, triangleButton;
     Button plusButton, minusButton;

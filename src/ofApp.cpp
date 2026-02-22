@@ -45,13 +45,13 @@ void ofApp::updateOscillator() {
     if (type == 1)
         synth.setOscillator(std::make_unique<SineOscillator>(freq, 44100.0f));
     else if (type == 2)
-        synth.setOscillator(std::make_unique<SquareOscillator>(freq, 44100.0f));
+        synth.setOscillator(std::make_unique<TriangleOscillator>(freq, 44100.0f));
     else if (type == 3)
-        synth.setOscillator(std::make_unique<NoiseOscillator>(freq, 44100.0f));
+        synth.setOscillator(std::make_unique<SquareOscillator>(freq, 44100.0f));
     else if (type == 4)
         synth.setOscillator(std::make_unique<SawtoothOscillator>(freq, 44100.0f));
     else if (type == 5)
-        synth.setOscillator(std::make_unique<TriangleOscillator>(freq, 44100.0f));
+        synth.setOscillator(std::make_unique<NoiseOscillator>(freq, 44100.0f));
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
