@@ -1,18 +1,7 @@
 #pragma once
 #include "Synth.h"
+#include "Visualiser.h"
 #include "ofMain.h"
-#include <vector>
-#include <mutex>
-
-struct Button {
-    float x, y, width, height;
-    string label;
-    bool isActive;
-
-    bool contains(float mx, float my) {
-        return mx >= x && mx <= x + width && my >= y && my <= y + height;
-    }
-};
 
 class ofApp : public ofBaseApp {
 public:
@@ -26,12 +15,7 @@ public:
 private:
     Synth synth;
     ofSoundStream soundStream;
+    Visualiser visualiser;
 
-    std::vector<float> waveformBuffer;
-    std::mutex bufferMutex;
-    int oscillatorType = 1;
-    float currentAmplitude = 0.0f;
-
-    Button sinButton, squareButton, noiseButton;
-    void drawButton(const Button& btn);
+    void updateOscillator();
 };
