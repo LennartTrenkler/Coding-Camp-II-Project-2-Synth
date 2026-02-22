@@ -2,6 +2,8 @@
 #include "SineOscillator.h"
 #include "SquareOscillator.h"
 #include "NoiseOscillator.h"
+#include "SawtoothOscillator.h"
+#include "TriangleOscillator.h"
 
 void ofApp::setup() {
     ofSoundStreamSettings settings;
@@ -44,8 +46,12 @@ void ofApp::updateOscillator() {
         synth.setOscillator(std::make_unique<SineOscillator>(freq, 44100.0f));
     else if (type == 2)
         synth.setOscillator(std::make_unique<SquareOscillator>(freq, 44100.0f));
-    else
+    else if (type == 3)
         synth.setOscillator(std::make_unique<NoiseOscillator>(freq, 44100.0f));
+    else if (type == 4)
+        synth.setOscillator(std::make_unique<SawtoothOscillator>(freq, 44100.0f));
+    else if (type == 5)
+        synth.setOscillator(std::make_unique<TriangleOscillator>(freq, 44100.0f));
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
@@ -56,16 +62,9 @@ void ofApp::mousePressed(int x, int y, int button) {
 }
 
 void ofApp::keyPressed(int key) {
-    if (key == '1') {
-        visualiser.setOscillatorType(1);
-        updateOscillator();
-    }
-    if (key == '2') {
-        visualiser.setOscillatorType(2);
-        updateOscillator();
-    }
-    if (key == '3') {
-        visualiser.setOscillatorType(3);
-        updateOscillator();
-    }
+    if (key == '1') { visualiser.setOscillatorType(1); updateOscillator(); }
+    if (key == '2') { visualiser.setOscillatorType(2); updateOscillator(); }
+    if (key == '3') { visualiser.setOscillatorType(3); updateOscillator(); }
+    if (key == '4') { visualiser.setOscillatorType(4); updateOscillator(); }
+    if (key == '5') { visualiser.setOscillatorType(5); updateOscillator(); }
 }

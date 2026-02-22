@@ -18,17 +18,9 @@ public:
     void setup();
     void draw();
     void addSample(float sample);
-
-    // Button interaction — returns oscillator type if changed, -1 if not
     int handleMousePressed(int x, int y);
-
-    // Frequency
     float getFrequency() { return frequency; }
-
-    // Let ofApp read oscillator type
     int getOscillatorType() { return oscillatorType; }
-
-    // Let ofApp set oscillator type (for keyboard shortcuts)
     void setOscillatorType(int type);
 
 private:
@@ -40,9 +32,9 @@ private:
     int samplesToDisplay = 300;
 
     Button sinButton, squareButton, noiseButton;
+    Button sawtoothButton, triangleButton;
     Button plusButton, minusButton;
     Button slowButton, mediumButton, fastButton;
 
     void drawButton(const Button& btn);
-    void updateAmplitude();
 };

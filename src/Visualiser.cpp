@@ -4,9 +4,11 @@ void Visualiser::setup() {
     waveformBuffer.resize(512, 0.0f);
 
     // Row 1 — Oscillator buttons
-    sinButton    = { 120, 50, 80, 30, "Sine",   true  };
-    squareButton = { 210, 50, 80, 30, "Square", false };
-    noiseButton  = { 300, 50, 80, 30, "Noise",  false };
+    sinButton      = { 120, 50,  80, 30, "Sine",     true  };
+    squareButton   = { 210, 50,  80, 30, "Square",   false };
+    noiseButton    = { 300, 50,  80, 30, "Noise",    false };
+    sawtoothButton = { 390, 50,  80, 30, "Sawtooth", false };
+    triangleButton = { 480, 50,  80, 30, "Triangle", false };
 
     // Row 2 — Wave speed buttons
     slowButton   = { 120, 90, 80, 30, "Slow",   false };
@@ -47,6 +49,8 @@ void Visualiser::draw() {
     drawButton(sinButton);
     drawButton(squareButton);
     drawButton(noiseButton);
+    drawButton(sawtoothButton);
+    drawButton(triangleButton);
 
     // Row 2 — Wave speed
     ofSetColor(150);
@@ -75,16 +79,20 @@ void Visualiser::draw() {
     // Label inside canvas
     ofSetColor(150);
     string label = "";
-    if (oscillatorType == 1) label = "SINE";
+    if (oscillatorType == 1)      label = "SINE";
     else if (oscillatorType == 2) label = "SQUARE";
-    else label = "NOISE";
+    else if (oscillatorType == 3) label = "NOISE";
+    else if (oscillatorType == 4) label = "SAWTOOTH";
+    else if (oscillatorType == 5) label = "TRIANGLE";
     label += "  |  " + ofToString((int)frequency) + " HZ";
     ofDrawBitmapString(label, canvasX + 16, canvasY + 24);
 
     // Waveform colour
-    if (oscillatorType == 1) ofSetColor(0, 200, 255);
+    if (oscillatorType == 1)      ofSetColor(0, 200, 255);
     else if (oscillatorType == 2) ofSetColor(255, 100, 50);
-    else ofSetColor(180, 100, 255);
+    else if (oscillatorType == 3) ofSetColor(180, 100, 255);
+    else if (oscillatorType == 4) ofSetColor(255, 200, 0);
+    else if (oscillatorType == 5) ofSetColor(0, 255, 150);
 
     // Draw waveform
     {
@@ -120,7 +128,6 @@ void Visualiser::addSample(float sample) {
     waveformBuffer[writePos % waveformBuffer.size()] = sample;
     writePos++;
 
-    // Compute RMS amplitude
     float rms = 0.0f;
     for (auto s : waveformBuffer) rms += s * s;
     currentAmplitude = sqrt(rms / waveformBuffer.size());
@@ -134,6 +141,8 @@ int Visualiser::handleMousePressed(int x, int y) {
         sinButton.isActive = true;
         squareButton.isActive = false;
         noiseButton.isActive = false;
+        sawtoothButton.isActive = false;
+        triangleButton.isActive = false;
         newType = 1;
     }
     if (squareButton.contains(x, y)) {
@@ -141,6 +150,8 @@ int Visualiser::handleMousePressed(int x, int y) {
         sinButton.isActive = false;
         squareButton.isActive = true;
         noiseButton.isActive = false;
+        sawtoothButton.isActive = false;
+        triangleButton.isActive = false;
         newType = 2;
     }
     if (noiseButton.contains(x, y)) {
@@ -148,7 +159,27 @@ int Visualiser::handleMousePressed(int x, int y) {
         sinButton.isActive = false;
         squareButton.isActive = false;
         noiseButton.isActive = true;
+        sawtoothButton.isActive = false;
+        triangleButton.isActive = false;
         newType = 3;
+    }
+    if (sawtoothButton.contains(x, y)) {
+        oscillatorType = 4;
+        sinButton.isActive = false;
+        squareButton.isActive = false;
+        noiseButton.isActive = false;
+        sawtoothButton.isActive = true;
+        triangleButton.isActive = false;
+        newType = 4;
+    }
+    if (triangleButton.contains(x, y)) {
+        oscillatorType = 5;
+        sinButton.isActive = false;
+        squareButton.isActive = false;
+        noiseButton.isActive = false;
+        sawtoothButton.isActive = false;
+        triangleButton.isActive = true;
+        newType = 5;
     }
     if (plusButton.contains(x, y)) {
         frequency += 10.0f;
@@ -182,7 +213,9 @@ int Visualiser::handleMousePressed(int x, int y) {
 
 void Visualiser::setOscillatorType(int type) {
     oscillatorType = type;
-    sinButton.isActive    = (type == 1);
-    squareButton.isActive = (type == 2);
-    noiseButton.isActive  = (type == 3);
+    sinButton.isActive      = (type == 1);
+    squareButton.isActive   = (type == 2);
+    noiseButton.isActive    = (type == 3);
+    sawtoothButton.isActive = (type == 4);
+    triangleButton.isActive = (type == 5);
 }
