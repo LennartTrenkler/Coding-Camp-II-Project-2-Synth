@@ -29,7 +29,7 @@ void ofApp::draw() {
 
 void ofApp::audioOut(ofSoundBuffer& buffer) {
     for (size_t i = 0; i < buffer.getNumFrames(); i++) {
-        float sample = synth.generateSample();
+        float sample = synth.generateSample() * visualiser.getVolume();
         visualiser.addSample(sample);
 
         for (size_t ch = 0; ch < buffer.getNumChannels(); ch++) {
