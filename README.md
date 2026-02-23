@@ -34,28 +34,8 @@ A real-time audio synthesizer with live waveform visualisation, built with OpenF
 
 Frequency and volume can also be adjusted with the on-screen − / + buttons.
 
-## Project Structure
-
-```
-src/
-├── ofApp.h / ofApp.cpp               # Main app, sound stream
-├── Synth.h / Synth.cpp               # Audio engine
-├── Oscillator.h / Oscillator.cpp     # Base oscillator class
-├── SineOscillator.h / .cpp
-├── SquareOscillator.h / .cpp
-├── NoiseOscillator.h / .cpp
-├── SawtoothOscillator.h / .cpp
-├── TriangleOscillator.h / .cpp
-└── Visualiser.h / Visualiser.cpp     # UI and waveform drawing
-```
-
 ## Built With
 
 - [OpenFrameworks](https://openframeworks.cc/) v0.12
 - C++17
 - Xcode (Mac) / Visual Studio (Windows)
-
-## Authors
-
-Lennart Trenkler – audio engine  
-Doreen R – visualisation layer, additional oscillators
