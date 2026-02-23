@@ -122,7 +122,7 @@ void Visualiser::draw() {
             std::lock_guard<std::mutex> lock(bufferMutex);
             float stepX = canvasW / (float)samplesToDisplay;
             for (int i = 0; i < samplesToDisplay && i < (int)waveformBuffer.size(); i++) {
-                line.addVertex(canvasX + i * stepX, midY - waveformBuffer[i] * scaleY);
+                line.addVertex(canvasX + i * stepX, midY - (waveformBuffer[i] / 0.15f) * scaleY);
             }
         } else {
             animPhase += 0.05f;
@@ -149,6 +149,40 @@ void Visualiser::draw() {
             }
         }
         line.draw();
+        
+        // Cursor glow on waveform
+        float glowX = canvasX + canvasW / 2.0f;
+        float glowPhase = (0.5f) * TWO_PI * cycles + animPhase;
+        float glowSample = 0.0f;
+
+        if (oscillatorType == 1) {
+            glowSample = sin(glowPhase);
+        } else if (oscillatorType == 2) {
+            float p = fmod(glowPhase, TWO_PI);
+            if (p < PI) glowSample = (p / (PI / 2.0f)) - 1.0f;
+            else        glowSample = 3.0f - (p / (PI / 2.0f));
+        } else if (oscillatorType == 3) {
+            glowSample = sin(glowPhase) >= 0 ? 1.0f : -1.0f;
+        } else if (oscillatorType == 4) {
+            float p = fmod(glowPhase, TWO_PI);
+            glowSample = (p / PI) - 1.0f;
+        }
+
+        float glowY = midY - glowSample * scaleY;
+        float glowRadius = 6.0f + currentAmplitude * 20.0f;
+
+        // Outer soft glow
+        ofSetColor(waveColor.r, waveColor.g, waveColor.b, 60);
+        ofDrawCircle(glowX, glowY, glowRadius * 2.5f);
+
+        // Mid glow
+        ofSetColor(waveColor.r, waveColor.g, waveColor.b, 120);
+        ofDrawCircle(glowX, glowY, glowRadius);
+
+        // Bright centre
+        ofSetColor(255);
+        ofDrawCircle(glowX, glowY, 3.0f);
+        
     }
 
     // Amplitude bar
