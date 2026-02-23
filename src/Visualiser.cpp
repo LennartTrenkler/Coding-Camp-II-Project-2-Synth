@@ -122,10 +122,12 @@ void Visualiser::draw() {
             std::lock_guard<std::mutex> lock(bufferMutex);
             float stepX = canvasW / (float)samplesToDisplay;
             for (int i = 0; i < samplesToDisplay && i < (int)waveformBuffer.size(); i++) {
-                line.addVertex(canvasX + i * stepX, midY - (waveformBuffer[i] / 0.15f) * scaleY);
+                if (i < (int)waveformBuffer.size()) {
+                    line.addVertex(canvasX + i * stepX, midY - (waveformBuffer[i] / 0.2f) * scaleY);
+                }
             }
         } else {
-            animPhase += 0.05f;
+            animPhase += 0.05f * (frequency / 440.0f);
             int steps = 512;
             for (int i = 0; i < steps; i++) {
                 float x = canvasX + (i / (float)steps) * canvasW;
