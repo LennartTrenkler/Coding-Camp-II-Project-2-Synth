@@ -7,3 +7,6 @@ obj/
 *.suo
 *.ipch
 *.vcxproj.user
+*.xcodeproj
+*.xcworkspace
+.DS_Store
